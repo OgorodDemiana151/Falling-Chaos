@@ -123,6 +123,73 @@ border-top:1px solid rgba(255,255,255,.1);
 </head>
 <body>
 
+<p id="online-counter"
+style="
+position:fixed;
+top:20px;
+right:20px;
+color:#00ff88;
+font-size:22px;
+font-family:Orbitron;
+z-index:9999;
+">
+🟢 Online: ...
+</p>
+
+<script>
+const FIREBASE_URL =
+"https://falling-chaos-default-rtdb.europe-west1.firebasedatabase.app";
+
+async function updateOnline() {
+
+    try {
+
+        const response = await fetch(
+            FIREBASE_URL + "/online.json"
+        );
+
+        const data = await response.json();
+
+        const now = Math.floor(Date.now() / 1000);
+
+        let online = 0;
+
+        if (data) {
+
+            for (const player in data) {
+
+                if (now - data[player] < 60) {
+                    online++;
+                }
+
+            }
+
+        }
+
+        document.getElementById(
+            "online-counter"
+        ).textContent =
+        "🟢 Online: " + online;
+
+    } catch {
+
+        document.getElementById(
+            "online-counter"
+        ).textContent =
+        "🟢 Online: ?";
+
+    }
+
+}
+
+updateOnline();
+
+setInterval(
+    updateOnline,
+    5000
+);
+</script>
+
 <section class="hero">
 <img src="logo.png" class="logo" alt="Falling Chaos Logo">
 <h1>FALLING CHAOS</h1>
