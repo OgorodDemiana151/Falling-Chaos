@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Falling Chaos</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+font-family:'Orbitron',sans-serif;
+background:linear-gradient(135deg,#050510,#0b1025,#170b2d);
+color:white;
+overflow-x:hidden;
+}
+.hero{
+min-height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+padding:40px;
+position:relative;
+}
+.hero::before{
+content:"";
+position:absolute;
+inset:0;
+background:
+radial-gradient(circle at 20% 20%,rgba(0,255,255,.2),transparent 25%),
+radial-gradient(circle at 80% 30%,rgba(255,0,255,.2),transparent 25%),
+radial-gradient(circle at 50% 80%,rgba(255,100,0,.15),transparent 25%);
+}
+h1{
+font-size:clamp(3rem,10vw,7rem);
+text-shadow:0 0 15px cyan,0 0 40px cyan;
+z-index:2;
+}
+.subtitle{
+z-index:2;
+max-width:900px;
+margin-top:20px;
+font-size:1.2rem;
+color:#d8d8d8;
+}
+.logo{
+width:260px;
+height:260px;
+border-radius:50%;
+border:4px solid cyan;
+box-shadow:0 0 30px cyan;
+margin-bottom:30px;
+object-fit:cover;
+z-index:2;
+}
+.buttons{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+margin-top:40px;
+z-index:2;
+}
+.btn{
+padding:18px 35px;
+border:none;
+border-radius:16px;
+font-size:1.1rem;
+font-weight:bold;
+cursor:pointer;
+text-decoration:none;
+color:white;
+transition:.3s;
+}
+.exe{background:linear-gradient(45deg,#00d4ff,#0077ff);}
+.apk{background:linear-gradient(45deg,#ff00aa,#7a00ff);}
+.btn:hover{
+transform:translateY(-5px) scale(1.05);
+}
+section{
+padding:90px 10%;
+}
+.section-title{
+font-size:3rem;
+margin-bottom:30px;
+text-shadow:0 0 15px cyan;
+}
+.card-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:25px;
+}
+.card{
+background:rgba(255,255,255,.06);
+backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,.15);
+padding:25px;
+border-radius:20px;
+box-shadow:0 0 20px rgba(0,255,255,.15);
+}
+.gallery{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+}
+.shot{
+height:220px;
+border-radius:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(45deg,#0d1f3b,#2b0d3b);
+border:2px solid rgba(255,255,255,.15);
+font-size:1.2rem;
+}
+footer{
+padding:40px;
+text-align:center;
+background:#050510;
+border-top:1px solid rgba(255,255,255,.1);
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+<img src="logo.png" class="logo" alt="Falling Chaos Logo">
+<h1>FALLING CHAOS</h1>
+<p class="subtitle">
+Увійди у світ хаосу, де небезпека падає буквально з неба.
+Ухиляйся від смертельних об'єктів, збирай бонуси, проходь рівні,
+покращуй рекорди та перевір свої рефлекси.
+</p>
+
+<div class="buttons">
+<a class="btn exe" href="FallingChaos.exe" download>⬇ Скачати для Windows (.exe)</a>
+<a class="btn apk" href="FallingChaos.apk" download>📱 Скачати для Android (.apk)</a>
+</div>
+</section>
+
+<section>
+<h2 class="section-title">Про гру</h2>
+<div class="card">
+<p>
+Falling Chaos — це швидка аркадна гра, створена на Python та Pygame.
+Гравець повинен вижити серед потоку падаючих об'єктів.
+Одні вороги відбирають життя, інші можуть дати бонус,
+а деякі миттєво завершують гру.
+Чим довше ти виживаєш — тим вищий твій рекорд.
+</p>
+</div>
+</section>
+
+<section>
+<h2 class="section-title">Особливості</h2>
+<div class="card-grid">
+<div class="card">🎮 Просте та зрозуміле керування</div>
+<div class="card">💀 Небезпечні спеціальні вороги</div>
+<div class="card">❤️ Система життів</div>
+<div class="card">🏆 Таблиця рекордів</div>
+<div class="card">🎵 Фонова музика</div>
+<div class="card">🚀 Кілька рівнів складності</div>
+</div>
+</section>
+
+<section>
+<h2 class="section-title">Скріншоти</h2>
+<div class="gallery">
+<div class="shot">Додай screenshot1.png</div>
+<div class="shot">Додай screenshot2.png</div>
+<div class="shot">Додай screenshot3.png</div>
+<div class="shot">Додай screenshot4.png</div>
+</div>
+</section>
+
+<section>
+<h2 class="section-title">Як встановити?</h2>
+<div class="card">
+<p>
+Windows: натисни кнопку скачування .exe та запусти файл.<br><br>
+Android: натисни кнопку скачування .apk та встанови додаток.
+Можливо знадобиться дозволити встановлення з невідомих джерел.
+</p>
+</div>
+</section>
+
+<footer>
+<h3>Falling Chaos</h3>
+<p>Created by OGORODDEMIANA</p>
+<p>© 2026 All Rights Reserved</p>
+</footer>
+
+</body>
+</html>
