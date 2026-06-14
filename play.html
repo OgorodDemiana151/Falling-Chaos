@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+...
+<body>
+
+<canvas id="game" width="600" height="600"></canvas>
+
+<script>
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let state = "menu";
+
+let player;
+let enemies;
+let score;
+let lives;
+
+const WIDTH = 600;
+const HEIGHT = 600;
+const MAX_LIVES = 5;
+
+function randomEnemyType(){
+
+    const r = Math.random();
+
+    if(r < 0.03) return "pink";
+    if(r < 0.06) return "orange";
+    if(r < 0.12) return "bonus";
+
+    return "normal";
+}
+
+function createEnemy(){
+
+    return {
+        x:Math.random()*560,
+        y:Math.random()*-600,
+        w:40,
+        h:40,
+        type:randomEnemyType()
+    };
+}
+
+function resetGame(){
+
+    player = {
+        x:280,
+        y:520,
+        w:40,
+        h:40
+    };
+
+    enemies = [];
+
+    for(let i=0;i<3;i++){
+        enemies.push(createEnemy());
+    }
+
+    score = 0;
+    lives = 3;
+}
+
+resetGame();
+
+const keys = {};
+
+document.addEventListener("keydown",(e)=>{
+
+    keys[e.key.toLowerCase()] = true;
+
+    if(state==="menu"){
+        if(e.key==="Enter"){
+            resetGame();
+            state="game";
+        }
+    }
+
+    if(state==="gameover"){
+        if(e.key==="Enter"){
+            resetGame();
+            state="game";
+        }
+    }
+
+});
+
+document.addEventListener("keyup",(e)=>{
+    keys[e.key.toLowerCase()] = false;
+});
+
+function collide(a,b){
+
+    return (
+        a.x < b.x + b.w &&
+        a.x + a.w > b.x &&
+        a.y < b.y + b.h &&
+        a.y + a.h > b.y
+    );
+
+}
+
+function updateGame(){
+
+    if(keys["a"] || keys["arrowleft"]){
+        player.x -= 6;
+    }
+
+    if(keys["d"] || keys["arrowright"]){
+        player.x += 6;
+    }
+
+    if(player.x < 0){
+        player.x = 0;
+    }
+
+    if(player.x > WIDTH-player.w){
+        player.x = WIDTH-player.w;
+    }
+
+    for(let enemy of enemies){
+
+        enemy.y += 5;
+
+        if(enemy.y > HEIGHT){
+
+            enemy.y = -40;
+            enemy.x = Math.random()*560;
+            enemy.type = randomEnemyType();
+
+            if(enemy.type === "normal"){
+                score++;
+            }
+        }
+
+        if(collide(player,enemy)){
+
+            if(enemy.type === "pink"){
+
+                state = "gameover";
+                return;
+
+            }else if(enemy.type === "orange"){
+
+                lives = MAX_LIVES;
+
+            }else if(enemy.type === "bonus"){
+
+                if(lives < MAX_LIVES){
+                    lives++;
+                }
+
+            }else{
+
+                lives--;
+
+                if(lives <= 0){
+                    state = "gameover";
+                    return;
+                }
+            }
+
+            enemy.y = -40;
+            enemy.x = Math.random()*560;
+            enemy.type = randomEnemyType();
+        }
+    }
+}
+
+function drawGame(){
+
+    ctx.fillStyle="#222";
+    ctx.fillRect(0,0,WIDTH,HEIGHT);
+
+    ctx.fillStyle="white";
+    ctx.font="30px Arial";
+    ctx.fillText("Score: " + score,10,35);
+
+    for(let i=0;i<MAX_LIVES;i++){
+
+        ctx.beginPath();
+
+        ctx.fillStyle =
+            i < lives
+            ? "red"
+            : "#555";
+
+        ctx.arc(
+            20 + i*30,
+            70,
+            10,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+    }
+
+    ctx.fillStyle="deepskyblue";
+
+    ctx.fillRect(
+        player.x,
+        player.y,
+        player.w,
+        player.h
+    );
+
+    for(let enemy of enemies){
+
+        if(enemy.type==="pink"){
+            ctx.fillStyle="hotpink";
+        }
+        else if(enemy.type==="orange"){
+            ctx.fillStyle="orange";
+        }
+        else if(enemy.type==="bonus"){
+            ctx.fillStyle="purple";
+        }
+        else{
+            ctx.fillStyle="red";
+        }
+
+        ctx.fillRect(
+            enemy.x,
+            enemy.y,
+            enemy.w,
+            enemy.h
+        );
+    }
+}
+
+function drawMenu(){
+
+    ctx.fillStyle="#222";
+    ctx.fillRect(0,0,WIDTH,HEIGHT);
+
+    ctx.fillStyle="white";
+    ctx.font="70px Arial";
+
+    ctx.fillText(
+        "FALLING",
+        120,
+        220
+    );
+
+    ctx.fillText(
+        "CHAOS",
+        150,
+        300
+    );
+
+    ctx.font="30px Arial";
+
+    ctx.fillText(
+        "Press ENTER to Start",
+        160,
+        400
+    );
+
+    ctx.font="20px Arial";
+
+    ctx.fillStyle="hotpink";
+    ctx.fillText(
+        "Pink = Instant Death",
+        180,
+        470
+    );
+}
+
+function drawGameOver(){
+
+    ctx.fillStyle="#222";
+    ctx.fillRect(0,0,WIDTH,HEIGHT);
+
+    ctx.fillStyle="red";
+    ctx.font="70px Arial";
+
+    ctx.fillText(
+        "GAME OVER",
+        90,
+        220
+    );
+
+    ctx.fillStyle="white";
+    ctx.font="40px Arial";
+
+    ctx.fillText(
+        "Score: " + score,
+        220,
+        320
+    );
+
+    ctx.font="30px Arial";
+
+    ctx.fillText(
+        "Press ENTER",
+        190,
+        420
+    );
+}
+
+function loop(){
+
+    if(state==="menu"){
+        drawMenu();
+    }
+
+    if(state==="game"){
+        updateGame();
+        drawGame();
+    }
+
+    if(state==="gameover"){
+        drawGameOver();
+    }
+
+    requestAnimationFrame(loop);
+}
+
+loop();
+
+</script>
+
+</body>
+</html>
