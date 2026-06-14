@@ -123,6 +123,24 @@ border-top:1px solid rgba(255,255,255,.1);
 </head>
 <body>
 
+<script>
+const chaosFacts = [
+    "Pink enemies instantly kill you.",
+    "Orange enemies restore all lives.",
+    "Fake enemies don't hurt you.",
+    "Falling Chaos was made.",
+    "Every second can change everything.",
+    "Surviving is harder than it looks.",
+    "The chaos never sleeps.",
+    "Arrow keys are supported!",
+    "Some enemies are hiding secrets...",
+    "Good luck beating your record!"
+];
+
+const randomFact =
+    chaosFacts[Math.floor(Math.random() * chaosFacts.length)];
+</script>
+
 <p id="online-counter"
 style="
 position:fixed;
@@ -224,19 +242,31 @@ Falling Chaos — це швидка аркадна гра, створена лю
 <div class="card">🎮 Просте та зрозуміле керування</div>
 <div class="card">💀 Небезпечні спеціальні вороги</div>
 <div class="card">❤️ Система життів</div>
-<div class="card">🏆 Таблиця рекордів</div>
+<div class="card">🏆 Таблиця рекордів (скоро!)</div>
 <div class="card">🎵 Фонова музика</div>
 <div class="card">🚀 Кілька рівнів складності</div>
 </div>
 </section>
+    
+<section>
+<h2 class="section-title">Chaos Fact</h2>
 
+<div class="card">
+<p id="chaos-fact"></p>
+</div>
+</section>
+
+<script>
+document.getElementById("chaos-fact").textContent =
+"🎲 " + randomFact;
+</script>
 <section>
 <h2 class="section-title">Скріншоти</h2>
 <div class="gallery">
-<div class="shot">Додай screenshot1.png</div>
-<div class="shot">Додай screenshot2.png</div>
-<div class="shot">Додай screenshot3.png</div>
-<div class="shot">Додай screenshot4.png</div>
+<div class="shot">screenshot1.png</div>
+<div class="shot">screenshot2.png</div>
+<div class="shot">screenshot3.png</div>
+<div class="shot">screenshot4.png</div>
 </div>
 </section>
 
