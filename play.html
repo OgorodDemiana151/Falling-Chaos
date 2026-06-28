@@ -1,203 +1,1082 @@
 <!DOCTYPE html>
-<html>
-...
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Falling Chaos</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#111;
+    overflow:hidden;
+}
+
+canvas{
+    background:#1e1e1e;
+    display:block;
+    margin:auto;
+}
+
+#ui{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+}
+
+.screen{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+.hidden{
+    display:none;
+}
+
+button{
+    pointer-events:auto;
+    border:none;
+    border-radius:8px;
+    padding:15px 30px;
+    font-size:22px;
+    cursor:pointer;
+}
+
+input{
+    pointer-events:auto;
+    padding:12px;
+    font-size:22px;
+    width:300px;
+    text-align:center;
+}
+
+.title{
+    font-size:70px;
+    color:white;
+    margin-bottom:20px;
+}
+
+.splash{
+    color:yellow;
+    font-size:28px;
+    transform:rotate(-10deg);
+    margin-bottom:20px;
+}
+
+.menu-btn{
+    margin-top:15px;
+}
+
+#playBtn{
+    background:#00cc55;
+}
+
+#exitBtn{
+    background:#dd4444;
+}
+
+#continueBtn{
+    background:#00cc55;
+}
+
+#restartBtn{
+    background:#00cc55;
+}
+
+#menuBtn{
+    background:#dddd00;
+}
+
+#pauseBtn{
+    position:absolute;
+    top:10px;
+    right:10px;
+    width:50px;
+    height:50px;
+    font-size:22px;
+    pointer-events:auto;
+}
+
+#mobileControls{
+    position:absolute;
+    bottom:20px;
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    padding:0 50px;
+    pointer-events:none;
+}
+
+.controlBtn{
+    width:120px;
+    height:60px;
+    font-size:22px;
+    pointer-events:auto;
+}
+
+#leftBtn{
+    background:#6699ff;
+}
+
+#rightBtn{
+    background:#55dd55;
+}
+
+#nicknameError{
+    color:red;
+    margin-top:10px;
+}
+
+#hud{
+    position:absolute;
+    top:10px;
+    left:10px;
+    color:white;
+    font-size:24px;
+}
+
+#lives{
+    margin-top:10px;
+}
+
+.heart{
+    width:20px;
+    height:20px;
+    background:red;
+    border-radius:50%;
+    display:inline-block;
+    margin-right:5px;
+}
+
+.gray{
+    background:#555;
+}
+
+#countdown{
+    font-size:90px;
+    color:white;
+}
+
+.loadingBar{
+    width:400px;
+    height:30px;
+    border:2px solid white;
+    margin-top:20px;
+}
+
+.loadingFill{
+    height:100%;
+    width:0%;
+    background:white;
+}
+</style>
+</head>
+
 <body>
 
 <canvas id="game" width="600" height="600"></canvas>
 
+<div id="ui">
+
+<!-- INTRO -->
+
+<div id="introScreen" class="screen">
+    <div style="font-size:60px;color:white;">
+        OGORODDEMIANA'S GAMES
+    </div>
+
+    <div style="font-size:35px;color:#aaa;">
+        Presents
+    </div>
+</div>
+
+<!-- LOADING -->
+
+<div id="loadingScreen" class="screen hidden">
+
+    <div class="title">
+        Falling Chaos
+    </div>
+
+    <div class="loadingBar">
+        <div class="loadingFill" id="loadingFill"></div>
+    </div>
+
+    <div id="loadingText"
+         style="margin-top:20px;color:white;">
+         Loading...
+    </div>
+
+</div>
+
+<!-- NICKNAME -->
+
+<div id="nicknameScreen"
+     class="screen hidden">
+
+    <div class="title">
+        Enter Nick
+    </div>
+
+    <input
+        id="nicknameInput"
+        maxlength="15"
+        placeholder="Nickname">
+
+    <button
+        id="playNickBtn"
+        class="menu-btn">
+        Play
+    </button>
+
+    <div id="nicknameError"></div>
+
+</div>
+
+<!-- MENU -->
+
+<div id="menuScreen"
+     class="screen hidden">
+
+    <div class="title">
+        START
+    </div>
+
+    <div id="splashText"
+         class="splash">
+    </div>
+
+    <div id="bestScore"
+         style="color:yellow;font-size:28px;">
+    </div>
+
+    <button id="playBtn"
+            class="menu-btn">
+        Play
+    </button>
+
+    <button id="exitBtn"
+            class="menu-btn">
+        Exit
+    </button>
+
+</div>
+
+<!-- COUNTDOWN -->
+
+<div id="countdownScreen"
+     class="screen hidden">
+
+     <div id="countdown">
+        3
+     </div>
+
+</div>
+
+<!-- WIN -->
+
+<div id="winScreen"
+     class="screen hidden">
+
+    <div class="title"
+         style="color:#00ff00;">
+         You Won!
+    </div>
+
+    <button id="continueBtn">
+        Continue
+    </button>
+
+</div>
+
+<!-- GAMEOVER -->
+
+<div id="gameoverScreen"
+     class="screen hidden">
+
+    <div class="title"
+         style="color:red;">
+         You Lose
+    </div>
+
+    <div id="gameoverBest"
+         style="color:yellow;
+         font-size:28px;
+         margin-bottom:20px;">
+    </div>
+
+    <button id="menuBtn">
+        Back To Menu
+    </button>
+
+    <button id="restartBtn"
+            class="menu-btn">
+        Play Again
+    </button>
+
+</div>
+
+<!-- PAUSE -->
+
+<div id="pauseScreen"
+     class="screen hidden">
+
+    <div class="title">
+        PAUSE
+    </div>
+
+    <button id="resumeBtn">
+        Continue
+    </button>
+
+    <button id="pauseMenuBtn"
+            class="menu-btn">
+        Menu
+    </button>
+
+    <button id="pauseRestartBtn"
+            class="menu-btn">
+        Restart
+    </button>
+
+</div>
+
+<!-- HUD -->
+
+<div id="hud" class="hidden">
+
+    <div id="nickHud"></div>
+
+    <div id="scoreHud"></div>
+
+    <div id="goalHud"></div>
+
+    <div id="lives"></div>
+
+</div>
+
+<button id="pauseBtn"
+        class="hidden">
+        ||
+</button>
+
+<div id="mobileControls"
+     style="display:none;">
+
+    <button
+        id="leftBtn"
+        class="controlBtn">
+        LEFT
+    </button>
+
+    <button
+        id="rightBtn"
+        class="controlBtn">
+        RIGHT
+    </button>
+
+</div>
+
+</div>
+
 <script>
+
+const introMusic = new Audio("intro.mp3");
+const gameMusic = new Audio("music.mp3");
+
+gameMusic.loop = true;
+gameMusic.volume = 0.5;
+
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-let state = "menu";
-
-let player;
-let enemies;
-let score;
-let lives;
-
 const WIDTH = 600;
 const HEIGHT = 600;
-const MAX_LIVES = 5;
 
-function randomEnemyType(){
+let nickname = "";
+let bestScore = 0;
 
-    const r = Math.random();
+let score = 0;
+let lives = 3;
+let maxLives = 3;
 
-    if(r < 0.03) return "pink";
-    if(r < 0.06) return "orange";
-    if(r < 0.12) return "bonus";
+let enemySpeed = 5;
+let moveSpeed = 5;
 
-    return "normal";
-}
+let levelIndex = 0;
+let levels = [20,40,60,80];
+let targetLevel = levels[0];
+
+let state = "intro";
+
+const splashes = [
+"OgorodDemiana was here!",
+'hello ("print")',
+"Falling Chaos!",
+"Avoid pink enemies!",
+"Good luck!",
+"hi!",
+"100% bug free!",
+"Maybe...",
+"Made with IQ!",
+"Press Play!",
+"Don't lose!",
+"Chaotic enough?",
+"Random splash text!",
+"Not Minecraft!",
+"Developer approved!",
+"Splash text released in 13.06.2026!"
+];
+
+document.getElementById("splashText").textContent =
+splashes[Math.floor(Math.random()*splashes.length)];
+
+const player = {
+    x:280,
+    y:500,
+    w:40,
+    h:40
+};
+
+let enemies = [];
 
 function createEnemy(){
-
     return {
         x:Math.random()*560,
-        y:Math.random()*-600,
+        y:0,
         w:40,
         h:40,
-        type:randomEnemyType()
+        fake:false,
+        bonus:false,
+        pink:false,
+        orange:false
     };
 }
 
-function resetGame(){
+function resetRun(){
 
-    player = {
-        x:280,
-        y:520,
-        w:40,
-        h:40
-    };
+    player.x = 280;
+
+    score = 0;
+    lives = maxLives;
 
     enemies = [];
 
-    for(let i=0;i<3;i++){
-        enemies.push(createEnemy());
-    }
+    enemies.push(createEnemy());
+}
+function showScreen(id){
 
-    score = 0;
-    lives = 3;
+    [
+        "introScreen",
+        "loadingScreen",
+        "nicknameScreen",
+        "menuScreen",
+        "countdownScreen",
+        "winScreen",
+        "gameoverScreen",
+        "pauseScreen"
+    ].forEach(x=>{
+        document.getElementById(x).classList.add("hidden");
+    });
+
+    // Ховаємо HUD і кнопки за замовчуванням
+    document.getElementById("hud").classList.add("hidden");
+    document.getElementById("pauseBtn").classList.add("hidden");
+    document.getElementById("mobileControls").classList.add("hidden");
+
+    document.getElementById("mobileControls").style.display = "none";
+
+    // hi
+    document.getElementById(id).classList.remove("hidden");
+}
+function updateLives(){
+
+    const livesDiv =
+    document.getElementById("lives");
+
+    livesDiv.innerHTML = "";
+
+    for(let i=0;i<maxLives;i++){
+
+        const heart =
+        document.createElement("span");
+
+        heart.className =
+        i < lives
+        ? "heart"
+        : "heart gray";
+
+        livesDiv.appendChild(heart);
+    }
 }
 
-resetGame();
+function updateHUD(){
 
-const keys = {};
+    document
+    .getElementById("nickHud")
+    .textContent =
+    "Nickname: " + nickname;
 
-document.addEventListener("keydown",(e)=>{
+    document
+    .getElementById("scoreHud")
+    .textContent =
+    "Score: " + score;
 
-    keys[e.key.toLowerCase()] = true;
+    document
+    .getElementById("goalHud")
+    .textContent =
+    "Goal: " + targetLevel;
 
-    if(state==="menu"){
-        if(e.key==="Enter"){
-            resetGame();
-            state="game";
-        }
-    }
+    updateLives();
+}
 
-    if(state==="gameover"){
-        if(e.key==="Enter"){
-            resetGame();
-            state="game";
-        }
-    }
+function saveRecord(){
 
-});
-
-document.addEventListener("keyup",(e)=>{
-    keys[e.key.toLowerCase()] = false;
-});
-
-function collide(a,b){
-
-    return (
-        a.x < b.x + b.w &&
-        a.x + a.w > b.x &&
-        a.y < b.y + b.h &&
-        a.y + a.h > b.y
+    const old =
+    parseInt(
+        localStorage.getItem(
+            "fc_record_" + nickname
+        ) || "0"
     );
 
+    if(score > old){
+
+        localStorage.setItem(
+            "fc_record_" + nickname,
+            score
+        );
+
+        bestScore = score;
+    }
 }
 
-function updateGame(){
+function loadRecord(){
 
-    if(keys["a"] || keys["arrowleft"]){
-        player.x -= 6;
+    bestScore =
+    parseInt(
+        localStorage.getItem(
+            "fc_record_" + nickname
+        ) || "0"
+    );
+}
+
+function startMenu(){
+
+    loadRecord();
+
+    document
+    .getElementById("bestScore")
+    .textContent =
+    "Best: " + bestScore;
+
+    document
+    .getElementById("hud")
+    .classList
+    .add("hidden");
+
+    document
+    .getElementById("pauseBtn")
+    .classList
+    .add("hidden");
+
+    document
+    .getElementById("mobileControls")
+    .classList
+    .add("hidden");
+
+    state = "menu";
+
+    showScreen("menuScreen");
+}
+
+function startCountdown(){
+
+    state = "countdown";
+
+    showScreen("countdownScreen");
+
+    let count = 3;
+
+    document
+    .getElementById("countdown")
+    .textContent =
+    count;
+
+    const timer =
+    setInterval(()=>{
+
+        count--;
+
+        if(count > 0){
+
+            document
+            .getElementById("countdown")
+            .textContent =
+            count;
+
+        }else if(count === 0){
+
+            document
+            .getElementById("countdown")
+            .textContent =
+            "LET'S GO!";
+
+        }else{
+
+            clearInterval(timer);
+
+            startGame();
+        }
+
+    },1000);
+}
+
+function startGame(){
+
+    state = "game";
+
+    showScreen("game");
+
+    document
+    .getElementById("hud")
+    .classList
+    .remove("hidden");
+
+    document
+    .getElementById("pauseBtn")
+    .classList
+    .remove("hidden");
+
+document.getElementById("mobileControls").style.display = "flex";
+
+    updateHUD();
+}
+
+function startGameOver(){
+
+    saveRecord();
+
+    document
+    .getElementById("gameoverBest")
+    .textContent =
+    "Best: " + bestScore;
+
+    document
+    .getElementById("hud")
+    .classList
+    .add("hidden");
+
+    document
+    .getElementById("pauseBtn")
+    .classList
+    .add("hidden");
+
+    document
+    .getElementById("mobileControls")
+    .classList
+    .add("hidden");
+
+    state = "gameover";
+
+    showScreen("gameoverScreen");
+}
+
+function startWin(){
+
+    saveRecord();
+
+    state = "win";
+
+    showScreen("winScreen");
+}
+
+let leftPressed = false;
+let rightPressed = false;
+
+document.addEventListener("keydown",e=>{
+
+    if(e.key==="ArrowLeft" || e.key==="a"){
+        leftPressed = true;
     }
 
-    if(keys["d"] || keys["arrowright"]){
-        player.x += 6;
+    if(e.key==="ArrowRight" || e.key==="d"){
+        rightPressed = true;
     }
 
-    if(player.x < 0){
+});
+
+document.addEventListener("keyup",e=>{
+
+    if(e.key==="ArrowLeft" || e.key==="a"){
+        leftPressed = false;
+    }
+
+    if(e.key==="ArrowRight" || e.key==="d"){
+        rightPressed = false;
+    }
+
+});
+
+document
+.getElementById("leftBtn")
+.addEventListener("mousedown",()=>{
+    leftPressed = true;
+});
+
+document
+.getElementById("leftBtn")
+.addEventListener("mouseup",()=>{
+    leftPressed = false;
+});
+
+document
+.getElementById("rightBtn")
+.addEventListener("mousedown",()=>{
+    rightPressed = true;
+});
+
+document
+.getElementById("rightBtn")
+.addEventListener("mouseup",()=>{
+    rightPressed = false;
+});
+
+document
+.getElementById("playNickBtn")
+.onclick = ()=>{
+
+    gameMusic.play().catch(()=>{});
+
+    const nick =
+    document
+    .getElementById("nicknameInput")
+    .value
+    .trim();
+
+    if(!nick){
+
+        document
+        .getElementById("nicknameError")
+        .textContent =
+        "Write nickname!";
+
+        return;
+    }
+
+    nickname = nick;
+
+    startMenu();
+};
+
+document
+.getElementById("playBtn")
+.onclick = ()=>{
+
+    maxLives = 3;
+
+    levelIndex = 0;
+
+    targetLevel =
+    levels[levelIndex];
+
+    resetRun();
+
+    startCountdown();
+};
+
+document
+.getElementById("exitBtn")
+.onclick = ()=>{
+
+    location.reload();
+};
+
+document
+.getElementById("pauseBtn")
+.onclick = ()=>{
+
+    state = "pause";
+
+    showScreen("pauseScreen");
+};
+
+document
+.getElementById("resumeBtn")
+.onclick = ()=>{
+
+    state = "game";
+
+    showScreen("game");
+};
+
+document
+.getElementById("pauseMenuBtn")
+.onclick = ()=>{
+
+    startMenu();
+};
+
+document
+.getElementById("pauseRestartBtn")
+.onclick = ()=>{
+
+    resetRun();
+
+    startGame();
+};
+
+document
+.getElementById("menuBtn")
+.onclick = ()=>{
+
+    startMenu();
+};
+
+document
+.getElementById("restartBtn")
+.onclick = ()=>{
+
+    maxLives = 3;
+
+    levelIndex = 0;
+
+    targetLevel =
+    levels[0];
+
+    resetRun();
+
+    startCountdown();
+};
+
+document
+.getElementById("continueBtn")
+.onclick = ()=>{
+
+    levelIndex++;
+
+    if(levelIndex >= levels.length){
+
+        startGameOver();
+        return;
+    }
+
+    targetLevel =
+    levels[levelIndex];
+
+    startCountdown();
+};
+
+introMusic.play().catch(()=>{});
+
+setTimeout(()=>{
+
+    showScreen("loadingScreen");
+
+    let progress = 0;
+
+    const fill =
+    document
+    .getElementById("loadingFill");
+
+    const txt =
+    document
+    .getElementById("loadingText");
+
+    const loader =
+    setInterval(()=>{
+
+        progress += 2;
+
+        fill.style.width =
+        progress + "%";
+
+        txt.textContent =
+        "Loading assets" +
+        ".".repeat(
+            Math.floor(
+                Math.random()*4
+            )
+        );
+
+if(progress >= 100){
+
+    clearInterval(loader);
+
+    introMusic.pause();
+    introMusic.currentTime = 0;
+
+    gameMusic.play().catch(()=>{});
+
+    showScreen("nicknameScreen");
+}
+
+    },60);
+
+},2000);
+function update(){
+
+    if(state !== "game")
+        return;
+
+    if(leftPressed)
+        player.x -= moveSpeed;
+
+    if(rightPressed)
+        player.x += moveSpeed;
+
+    if(player.x < 0)
         player.x = 0;
-    }
 
-    if(player.x > WIDTH-player.w){
+    if(player.x > WIDTH-player.w)
         player.x = WIDTH-player.w;
-    }
 
-    for(let enemy of enemies){
+    enemies.forEach(enemy=>{
 
-        enemy.y += 5;
+        enemy.y += enemySpeed;
 
         if(enemy.y > HEIGHT){
 
-            enemy.y = -40;
+            enemy.y = 0;
             enemy.x = Math.random()*560;
-            enemy.type = randomEnemyType();
 
-            if(enemy.type === "normal"){
-                score++;
-            }
-        }
+            enemy.fake = false;
+            enemy.bonus = false;
+            enemy.orange = false;
+            enemy.pink = false;
 
-        if(collide(player,enemy)){
+            const r = Math.random();
 
-            if(enemy.type === "pink"){
+            if(r < 0.03){
 
-                state = "gameover";
-                return;
+                enemy.pink = true;
 
-            }else if(enemy.type === "orange"){
+            }else if(r < 0.05){
 
-                lives = MAX_LIVES;
+                enemy.orange = true;
 
-            }else if(enemy.type === "bonus"){
+            }else if(r < 0.10){
 
-                if(lives < MAX_LIVES){
-                    lives++;
-                }
+                enemy.bonus = true;
 
             }else{
 
-                lives--;
-
-                if(lives <= 0){
-                    state = "gameover";
-                    return;
-                }
+                enemy.fake =
+                Math.random() < 0.3;
             }
 
-            enemy.y = -40;
-            enemy.x = Math.random()*560;
-            enemy.type = randomEnemyType();
+            if(
+                !enemy.fake &&
+                !enemy.bonus &&
+                !enemy.orange &&
+                !enemy.pink
+            ){
+                score++;
+            }
+
+            if(
+                score===10 &&
+                enemies.length===1
+            ){
+                enemies.push(createEnemy());
+            }
+
+            if(
+                score===15 &&
+                enemies.length===2
+            ){
+                enemies.push(createEnemy());
+            }
+
+            updateHUD();
         }
+
+        if(
+            player.x < enemy.x + enemy.w &&
+            player.x + player.w > enemy.x &&
+            player.y < enemy.y + enemy.h &&
+            player.y + player.h > enemy.y
+        ){
+
+            if(enemy.pink){
+
+                lives = 0;
+
+                startGameOver();
+
+                return;
+            }
+
+            if(enemy.orange){
+
+                lives = maxLives;
+
+            }else if(enemy.bonus){
+
+                if(lives < maxLives)
+                    lives++;
+
+            }else if(!enemy.fake){
+
+                lives--;
+
+                enemy.y = 0;
+
+                if(lives <= 0){
+
+                    startGameOver();
+
+                    return;
+                }
+
+            }
+
+            updateHUD();
+        }
+
+    });
+
+    if(score >= targetLevel){
+
+        maxLives++;
+
+        if(targetLevel===80){
+
+            startGameOver();
+
+        }else{
+
+            startWin();
+        }
+
     }
+
 }
 
-function drawGame(){
+function draw(){
 
-    ctx.fillStyle="#222";
-    ctx.fillRect(0,0,WIDTH,HEIGHT);
+    ctx.clearRect(
+        0,
+        0,
+        WIDTH,
+        HEIGHT
+    );
 
-    ctx.fillStyle="white";
-    ctx.font="30px Arial";
-    ctx.fillText("Score: " + score,10,35);
+    if(state !== "game")
+        return;
 
-    for(let i=0;i<MAX_LIVES;i++){
-
-        ctx.beginPath();
-
-        ctx.fillStyle =
-            i < lives
-            ? "red"
-            : "#555";
-
-        ctx.arc(
-            20 + i*30,
-            70,
-            10,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fill();
-    }
-
-    ctx.fillStyle="deepskyblue";
+    ctx.fillStyle =
+    "#00ccff";
 
     ctx.fillRect(
         player.x,
@@ -206,19 +1085,32 @@ function drawGame(){
         player.h
     );
 
-    for(let enemy of enemies){
+    enemies.forEach(enemy=>{
 
-        if(enemy.type==="pink"){
-            ctx.fillStyle="hotpink";
-        }
-        else if(enemy.type==="orange"){
-            ctx.fillStyle="orange";
-        }
-        else if(enemy.type==="bonus"){
-            ctx.fillStyle="purple";
-        }
-        else{
-            ctx.fillStyle="red";
+        if(enemy.pink){
+
+            ctx.fillStyle =
+            "#ff00ff";
+
+        }else if(enemy.orange){
+
+            ctx.fillStyle =
+            "orange";
+
+        }else if(enemy.bonus){
+
+            ctx.fillStyle =
+            "#bb00ff";
+
+        }else if(enemy.fake){
+
+            ctx.fillStyle =
+            "#222";
+
+        }else{
+
+            ctx.fillStyle =
+            "#ff4444";
         }
 
         ctx.fillRect(
@@ -227,98 +1119,25 @@ function drawGame(){
             enemy.w,
             enemy.h
         );
-    }
+
+    });
+
 }
 
-function drawMenu(){
+function gameLoop(){
 
-    ctx.fillStyle="#222";
-    ctx.fillRect(0,0,WIDTH,HEIGHT);
+    update();
 
-    ctx.fillStyle="white";
-    ctx.font="70px Arial";
+    draw();
 
-    ctx.fillText(
-        "FALLING",
-        120,
-        220
-    );
-
-    ctx.fillText(
-        "CHAOS",
-        150,
-        300
-    );
-
-    ctx.font="30px Arial";
-
-    ctx.fillText(
-        "Press ENTER to Start",
-        160,
-        400
-    );
-
-    ctx.font="20px Arial";
-
-    ctx.fillStyle="hotpink";
-    ctx.fillText(
-        "Pink = Instant Death",
-        180,
-        470
+    requestAnimationFrame(
+        gameLoop
     );
 }
 
-function drawGameOver(){
+resetRun();
 
-    ctx.fillStyle="#222";
-    ctx.fillRect(0,0,WIDTH,HEIGHT);
-
-    ctx.fillStyle="red";
-    ctx.font="70px Arial";
-
-    ctx.fillText(
-        "GAME OVER",
-        90,
-        220
-    );
-
-    ctx.fillStyle="white";
-    ctx.font="40px Arial";
-
-    ctx.fillText(
-        "Score: " + score,
-        220,
-        320
-    );
-
-    ctx.font="30px Arial";
-
-    ctx.fillText(
-        "Press ENTER",
-        190,
-        420
-    );
-}
-
-function loop(){
-
-    if(state==="menu"){
-        drawMenu();
-    }
-
-    if(state==="game"){
-        updateGame();
-        drawGame();
-    }
-
-    if(state==="gameover"){
-        drawGameOver();
-    }
-
-    requestAnimationFrame(loop);
-}
-
-loop();
+gameLoop();
 
 </script>
 
